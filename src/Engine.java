@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
 import javax.swing.TransferHandler;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
@@ -19,12 +20,24 @@ public class Engine {
 	private boolean isSaved = false; // check if file is saved
 	private JFileChooser chooser = new JFileChooser(); // file chooser
 
+	private Window win;
+	private JTextPane textPane;
+	public Engine(Window window,JTextPane textp)
+	{
+		win = window;
+		textPane = textp;
+		
+		
+	}
+	
 	/**
 	 * ask if want to save file and clean whole text
 	 */
 	void newFile() {
 
-		if (!Window.textPane.getText().isEmpty()) {
+		
+		
+		if (!textPane.getText().isEmpty()) {
 			int x = JOptionPane.showConfirmDialog(null,
 					"Do you want to save your changes?");
 			switch (x) {
@@ -33,7 +46,7 @@ public class Engine {
 				break;
 
 			case 1:
-				Window.textPane.setText("");
+				textPane.setText("");
 				break;
 
 			case 2:
@@ -54,7 +67,7 @@ public class Engine {
 
 			PrintWriter zapis = new PrintWriter(new File(chooser
 					.getSelectedFile().getAbsolutePath()) + ".txt");
-			zapis.println(Window.textPane.getText());
+			zapis.println(textPane.getText());
 			zapis.close();
 		} catch (FileNotFoundException a) {
 			System.out.println("nie dziala");
@@ -82,7 +95,7 @@ public class Engine {
 
 				PrintWriter zapis = new PrintWriter(new File(chooser
 						.getSelectedFile().getAbsolutePath()));
-				zapis.println(Window.textPane.getText());
+				zapis.println(textPane.getText());
 				zapis.close();
 			} catch (FileNotFoundException a) {
 				System.out.println("nie dziala");
@@ -98,7 +111,7 @@ public class Engine {
 	 */
 	void open() {
 
-		if (!Window.textPane.getText().isEmpty()) {
+		if (!textPane.getText().isEmpty()) {
 			int x = JOptionPane.showConfirmDialog(null,
 					"Do you want to save your changes?");
 			if (x == 0) {
@@ -113,14 +126,14 @@ public class Engine {
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-			Window.textPane.setText("");
+			textPane.setText("");
 			try {
 
 				BufferedReader reader = new BufferedReader(new FileReader(
 						chooser.getSelectedFile()));
 				String line;
 				while ((line = reader.readLine()) != null) {
-					Window.textPane.setText(Window.textPane.getText() + "\n"
+					textPane.setText(textPane.getText() + "\n"
 							+ line);
 
 				}
@@ -140,7 +153,7 @@ public class Engine {
 
 	void copy() {
 		StringSelection stringSelection = new StringSelection(
-				Window.textPane.getText());
+				textPane.getText());
 		Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
 		clpbrd.setContents(stringSelection, null);
 	}
@@ -150,9 +163,9 @@ public class Engine {
 	 */
 	void paste() {
 		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		TransferHandler transferHandler = Window.textPane.getTransferHandler();
+		TransferHandler transferHandler = textPane.getTransferHandler();
 		transferHandler
-				.importData(Window.textPane, clipboard.getContents(null));
+				.importData(textPane, clipboard.getContents(null));
 	}
 
 	/**
@@ -161,7 +174,7 @@ public class Engine {
 
 	void cut() {
 		copy();
-		Window.textPane.replaceSelection("");
+		textPane.replaceSelection("");
 	}
 
 	/**
@@ -173,13 +186,13 @@ public class Engine {
 		
 		try {
 			String word = JOptionPane.showInputDialog("Find:");
-			String wholeText = Window.textPane.getText();
+			String wholeText = textPane.getText();
 			
 			for (int index = 0; index + word.length() < wholeText.length(); index++) {
-				String match = Window.textPane.getText(index, word.length());
+				String match = textPane.getText(index, word.length());
 				if (word.equals(match)) {
 
-					 Window.textPane.select(index, index+word.length());
+					textPane.select(index, index+word.length());
 					
 					System.out.print(".");
 				}
@@ -195,7 +208,7 @@ public class Engine {
 	 * Colour special words
 	 */
 	public void searchLine() {
-		String wholeText = Window.textPane.getText();
+		String wholeText = textPane.getText();
 		char[] chars = wholeText.toCharArray();
 
 		for (int i = 0; i < chars.length; i++) {

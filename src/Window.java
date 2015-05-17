@@ -17,11 +17,14 @@ import javax.swing.undo.UndoManager;
 
 public class Window {
 
-	public static JTextPane textPane = new JTextPane(); // whole text
-	public static JFrame frame; // main frame
-	public static JLabel lblNewLabel = new JLabel(); // position of caret label
-	public static int caretPosition = 0; // current position of caret
-	Engine engine = new Engine(); // all functionality(save,open, cut, paste
+	private  JTextPane textPane = new JTextPane(); // whole text
+	
+	private  JFrame frame; // main frame
+	
+	private  JLabel lblNewLabel = new JLabel(); // position of caret label
+	private  int caretPosition = 0; // current position of caret
+	
+	Engine engine; // all functionality(save,open, cut, paste
 									// etc)
 	UndoManager manager = new UndoManager(); // undo manager
 	Action undoAction = new UndoAction(manager);
@@ -30,18 +33,22 @@ public class Window {
 	/**
 	 * Create the application.
 	 */
-	public Window() {
+	public Window(JFrame f) {
+		
+		
+		frame = f;
+		
 		initialize();
-
+		engine = new Engine(this, textPane);
 		frame.getContentPane().add(textPane, BorderLayout.CENTER);
 		textPane.setText("");
 		textPane.setForeground(Color.BLACK);
 		textPane.setBackground(Color.WHITE);
 		lblNewLabel.setText("Position: " + caretPosition);
 
-		textPane.getDocument().addDocumentListener(new MyDocumentListener());
+		textPane.getDocument().addDocumentListener(new MyDocumentListener(this,caretPosition,lblNewLabel, textPane ));
 		textPane.getDocument().addUndoableEditListener(manager);
-
+		frame.setVisible(true);
 	}
 
 	/**
@@ -49,7 +56,7 @@ public class Window {
 	 */
 	private void initialize() {
 
-		frame = new JFrame();
+		//frame = new JFrame();
 		frame.setBounds(100, 100, 452, 523);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
